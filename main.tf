@@ -21,3 +21,8 @@ module "dynamo-db" {
 module "vpc" {
   source = "./module/vpc"
 }
+
+module "security-group" {
+  source = "./module/security-groups"
+  vpc-id = module.vpc.Face-Rekognition-VPC
+}
