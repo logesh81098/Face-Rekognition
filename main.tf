@@ -10,3 +10,7 @@ module "lambda-function" {
   source = "./module/lambda-function"
   rekognition-collection-id-arn = module.iam.rekognition-collection-id-arn
 }
+
+module "dynamo-db" {
+  source = "./module/Dynamo DB"
+}
