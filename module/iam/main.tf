@@ -84,10 +84,10 @@ resource "aws_iam_role_policy_attachment" "rekognition-collection-id" {
 #IAM Role for Lambda function to process (Index face) the image from the S3 bucket
 
 resource "aws_iam_role" "faceprints-role" {
-  name = "Face-Prints"
+  name = "Rekognition-Faceprints"
   description = "IAM Role for Lambda function to process (Index face) the image from the S3 bucket"
   tags = {
-    Name = "Face-Prints"
+    Name = "Rekognition-Faceprints"
     Project = "Face Rekognition"
   }
   assume_role_policy = <<EOF
@@ -112,10 +112,10 @@ EOF
 #IAM policy for Lambda function to create face prints from source s3 bucket
 
 resource "aws_iam_policy" "face-prints-policy" {
-  name = "Face-Prints-policy"
+  name = "Rekognition-Faceprints-policy"
   description = "IAM policy for Lambda function to create face prints from source s3 bucket"
   tags = {
-    Name = "Face-Prints-Poilcy"
+    Name = "Rekognition-Faceprints-Poilcy"
     Project = "Face Rekognition"
   }
   policy = <<EOF
