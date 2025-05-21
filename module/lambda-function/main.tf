@@ -41,7 +41,7 @@ data "archive_file" "faceprints" {
 }
 
 #################################################################################################################################################
-#                                                     Lambda Function
+#                                                       Lambda Function
 #################################################################################################################################################
 #Lambda Function to generate Face Index
 
@@ -56,4 +56,19 @@ resource "aws_lambda_function" "rekognition-faceprints" {
     Name =  "Rekognition-Faceprints"
     Project = "Face-Rekognition"
   }
+}
+
+
+#################################################################################################################################################
+#                                                S3 to trigger Lambda Function
+#################################################################################################################################################
+#S3 bucket to trigger lambda function for each object upload
+
+
+resource "aws_lambda_permission" "s3-to-invoke-lambda" {
+    function_name = aws_lambda_function.rekognition-faceprints.function_name
+    statement_id = "s3-to-trigger-lambda"
+    principal = "s3.amazonaws.com"
+    action = "lambda:InvokeFunction"
+    source_arn = var.face-rekognition-source-bucket
 }
