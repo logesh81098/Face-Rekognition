@@ -26,3 +26,9 @@ module "security-group" {
   source = "./module/security-groups"
   vpc-id = module.vpc.Face-Rekognition-VPC
 }
+
+module "ec2-server" {
+  source = "./module/ec2-server"
+  subnet-id = module.vpc.subnet-id
+  Face-Rekognition-SG = module.security-group.security-group
+}
