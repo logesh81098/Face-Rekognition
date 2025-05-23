@@ -27,6 +27,7 @@ resource "aws_instance" "face-rekognition-server" {
   subnet_id = var.subnet-id
   security_groups = [var.Face-Rekognition-SG]
   key_name = aws_key_pair.face-rekognition-key.key_name
+  iam_instance_profile = var.rekognition-instance-profile
   tags = {
     Name = "Face-Rekognition-Server"
     Project = "Face-Rekognition"

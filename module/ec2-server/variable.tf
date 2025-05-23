@@ -13,3 +13,7 @@ variable "subnet-id" {
 variable "Face-Rekognition-SG" {
   default = {}
 }
+
+variable "rekognition-instance-profile" {
+  default = {}
+}

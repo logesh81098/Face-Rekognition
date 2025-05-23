@@ -31,4 +31,5 @@ module "ec2-server" {
   source = "./module/ec2-server"
   subnet-id = module.vpc.subnet-id
   Face-Rekognition-SG = module.security-group.security-group
+  rekognition-instance-profile = module.iam.rekognition-instance-profile
 }

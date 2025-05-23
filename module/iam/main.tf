@@ -167,7 +167,7 @@ EOF
 #################################################################################################################################################
 #                                                IAM Role and Policy attachement
 #################################################################################################################################################
-resource "aws_iam_role_policy_attachment" "face-prints-attachement" {
+resource "aws_iam_role_policy_attachment" "face-prints-attachment" {
   role = aws_iam_role.faceprints-role.id
   policy_arn = aws_iam_policy.face-prints-policy.arn
 }
@@ -177,3 +177,107 @@ resource "aws_iam_role_policy_attachment" "face-prints-attachement" {
 #################################################################################################################################################
 #IAM Role for EC2 instances 
 
+resource "aws_iam_role" "face-rekognition-ec2-role" {
+  name = "Face-Rekognition-EC2-role"
+  description = "EC2 Role for application to IndexFace and compare the existing faceprints"
+  tags = {
+    Name = "Face-Rekognition-EC2-role"
+    Project = "Face-Rekognition"
+  }
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+    {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRole",
+        "Principal": {
+            "Service": "ec2.amazonaws.com"
+        }
+    }
+    ]
+}  
+EOF
+}
+
+#################################################################################################################################################
+#                                                       IAM Policy
+#################################################################################################################################################
+#IAM policy for EC2 Instance 
+
+resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
+  name = "Face-Rekogntion-EC2-policy"
+  description = "EC2 Policy for application to IndexFace and compare the existing faceprints"
+  tags = {
+    Name = "Face-Rekogntion-EC2-policy"
+    Project = "Face-Rekogntion"
+  }
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudWatchLogGroup",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Sid": "DynamoDBGetItems",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:DescribeTable"
+            ],
+            "Resource": "arn:aws:dynamodb:*:*:table/Faceprints-Table"
+        },
+        {
+            "Sid": "RekognitionIndexFace",
+            "Effect": "Allow",
+            "Action": [
+                "rekognition:SearchFacesByImage",
+                "rekognition:DetectFaces",
+                "rekognition:ListCollections",
+                "rekognition:IndexFaces"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3PutSourceImage",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::face-rekognition-source-bucket/*",
+                "arn:aws:s3:::face-rekognition-source-bucket"
+            ]
+        }
+    ]
+}  
+EOF
+}
+
+
+#################################################################################################################################################
+#                                                IAM Role and Policy attachement
+#################################################################################################################################################
+
+resource "aws_iam_role_policy_attachment" "faceprints-ec2-role-policy-attachment" {
+  role = aws_iam_role.face-rekognition-ec2-role.id
+  policy_arn = aws_iam_policy.face-rekogntion-ec2-policy.arn
+}
+
+#################################################################################################################################################
+#                                                   IAM Instance Profile
+#################################################################################################################################################
+
+resource "aws_iam_instance_profile" "face-prints-instance-profile" {
+  role = aws_iam_role.face-rekognition-ec2-role.name
+  name = "Face-Prints-Instance-Profile"
+}
