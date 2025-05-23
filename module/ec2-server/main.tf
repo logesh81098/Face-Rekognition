@@ -32,5 +32,23 @@ resource "aws_instance" "face-rekognition-server" {
     Name = "Face-Rekognition-Server"
     Project = "Face-Rekognition"
   }
-
+  user_data = <<-EOF
+  #!/bin/bash
+  sudo su
+  set -eux
+  dnf update -y
+  dnf upgrade -y
+  dnf install -y git 
+  git --version
+  dnf install -y docker
+  sudo systemctl enable docker
+  sudo systemctl start docker
+  sleep 10
+  sudo systemctl status docker
+  usermod -aG docker ec2-user
+  dnf install -y python3 python3-pip 
+  pip install boto3
+  cd /
+  git clone https://github.com/logesh81098/Face-Rekognition.git
+EOF
 }

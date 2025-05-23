@@ -10,13 +10,13 @@ resource "aws_security_group" "face-rekognition-sg" {
   ingress {
     from_port = 22
     to_port = 22
-    cidr_blocks = []
+    cidr_blocks = [var.ssh-port]
     protocol = "tcp"
   }
   ingress {
     from_port = 81
     to_port = 81
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.application-port]
     protocol = "tcp"
   }
   egress {
