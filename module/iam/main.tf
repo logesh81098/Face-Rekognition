@@ -242,7 +242,10 @@ resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
                 "rekognition:SearchFacesByImage",
                 "rekognition:DetectFaces",
                 "rekognition:ListCollections",
-                "rekognition:IndexFaces"
+                "rekognition:IndexFaces",
+                "rekognition:ListFaces",
+                "rekognition:DeleteFaces,
+                "rekognition:CompareFaces"
             ],
             "Resource": "*"
         },
@@ -251,7 +254,9 @@ resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
             "Effect": "Allow",
             "Action": [
                 "s3:ListBucket",
-                "s3:PutObject"
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:HeadObject"
             ],
             "Resource": [
                 "arn:aws:s3:::face-rekognition-source-bucket/*",
