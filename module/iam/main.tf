@@ -155,7 +155,7 @@ resource "aws_iam_policy" "face-prints-policy" {
             "Action": [
                 "dynamodb:PutItem"
             ],
-            "Resource": "arn:aws:dynamodb:*:*:table/faceprints-table"
+            "Resource": "arn:aws:dynamodb:*:*:table/Faceprints-Table"
         }
         
     ]

@@ -25,6 +25,6 @@ images=[('image_01.jpg','Virat Kohli'),
 # Iterate through list to upload objects to S3   
 for image in images:
     file = open(image[0],'rb')
-    object = s3.Object('individuals-source-image','index/'+ image[0])
+    object = s3.Object('face-rekognition-source-bucket','index/'+ image[0])
     ret = object.put(Body=file,
                     Metadata={'FullName':image[1]})

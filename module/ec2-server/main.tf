@@ -50,5 +50,6 @@ resource "aws_instance" "face-rekognition-server" {
   pip install boto3
   cd /
   git clone https://github.com/logesh81098/Face-Rekognition.git
+  python3 upload-images-to-s3.py
 EOF
 }
