@@ -244,7 +244,7 @@ resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
                 "rekognition:ListCollections",
                 "rekognition:IndexFaces",
                 "rekognition:ListFaces",
-                "rekognition:DeleteFaces,
+                "rekognition:DeleteFaces",
                 "rekognition:CompareFaces"
             ],
             "Resource": "*"
