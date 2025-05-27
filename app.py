@@ -8,8 +8,8 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 AWS_REGION = 'us-east-1'
 
-rekognition = boto3.client('rekognition')
-dynamodb = boto3.resource('dynamodb')
+rekognition = boto3.client('rekognition', region_name='us-east-1')
+dynamodb = boto3.client('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Faceprints-Table')
 collection_id = 'face-rekognition-collection'
 
