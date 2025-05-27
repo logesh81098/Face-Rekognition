@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+AWS_REGION = 'us-east-1'
 
 rekognition = boto3.client('rekognition')
 dynamodb = boto3.resource('dynamodb')

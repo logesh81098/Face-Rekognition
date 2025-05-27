@@ -50,6 +50,10 @@ resource "aws_instance" "face-rekognition-server" {
   pip install boto3
   cd /
   git clone https://github.com/logesh81098/Face-Rekognition.git
+  cd Face-Rekognition/
   sudo python3 upload-images-to-s3.py
+  sudo docker build -t face-rekognition-app .
+  sudo docker run -d -p 81:81 face-rekognition-app
+  sudo docker ps -a 
 EOF
 }
