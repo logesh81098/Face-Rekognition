@@ -231,7 +231,9 @@ resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
             "Effect": "Allow",
             "Action": [
                 "dynamodb:GetItem",
-                "dynamodb:DescribeTable"
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:Scan"
             ],
             "Resource": "arn:aws:dynamodb:*:*:table/Faceprints-Table"
         },
@@ -239,13 +241,7 @@ resource "aws_iam_policy" "face-rekogntion-ec2-policy" {
             "Sid": "RekognitionIndexFace",
             "Effect": "Allow",
             "Action": [
-                "rekognition:SearchFacesByImage",
-                "rekognition:DetectFaces",
-                "rekognition:ListCollections",
-                "rekognition:IndexFaces",
-                "rekognition:ListFaces",
-                "rekognition:DeleteFaces",
-                "rekognition:CompareFaces"
+                "rekognition:*"
             ],
             "Resource": "*"
         },

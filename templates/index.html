@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Facial Recognition</title>
     <style>
         body {
@@ -11,17 +11,12 @@
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 2rem auto;
             padding: 20px;
-            background-color: #ffffff;
+            background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333333;
-        }
-        .form-group {
-            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
         input[type="file"] {
             display: none;
@@ -33,23 +28,23 @@
             background-color: #4CAF50;
             color: white;
             border-radius: 5px;
-            border: none;
             transition: background-color 0.3s;
+            margin-bottom: 1rem;
         }
         .custom-file-upload:hover {
             background-color: #45a049;
         }
         #selected-image {
-            margin-top: 20px;
             display: none;
             max-width: 100%;
             border-radius: 5px;
+            margin-top: 1rem;
         }
         button[type="submit"] {
             padding: 10px 20px;
             background-color: #007BFF;
-            color: white;
             border: none;
+            color: white;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -62,19 +57,17 @@
     <div class="container">
         <h1>Celebrities Facial Recognition</h1>
         <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="file-upload" class="custom-file-upload">Choose Image</label>
-                <input type="file" id="file-upload" name="image" accept="image/*" required onchange="previewImage(event)">
-            </div>
-            <img id="selected-image" src="#" alt="Selected Image">
-            <br><br>
+            <label for="file-upload" class="custom-file-upload">Choose Image</label>
+            <input type="file" id="file-upload" name="image" accept="image/*" required onchange="previewImage(event)">
+            <br />
+            <img id="selected-image" alt="Selected Image" />
+            <br /><br />
             <button type="submit">Check</button>
         </form>
     </div>
-
     <script>
         function previewImage(event) {
-            var selectedImage = document.getElementById('selected-image');
+            const selectedImage = document.getElementById('selected-image');
             selectedImage.style.display = 'block';
             selectedImage.src = URL.createObjectURL(event.target.files[0]);
         }

@@ -4,30 +4,35 @@ import uuid
 import os
 
 app = Flask(__name__)
-
-# Constants
 UPLOAD_FOLDER = 'uploads'
-COLLECTION_ID = 'face-rekognition-collection'
-DYNAMODB_TABLE_NAME = 'Faceprints-Table'
-AWS_REGION = 'us-east-1'
-
-# Configurations
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# AWS clients
-rekognition = boto3.client('rekognition', region_name='us-east-1')
-dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+AWS_REGION = 'us-east-1'
+REKOGNITION_COLLECTION = 'face-rekognition-collection'
+DYNAMODB_TABLE_NAME = 'Faceprints-Table'
+
+# Initialize boto3 clients and resources
+rekognition = boto3.client('rekognition', region_name=AWS_REGION)
+dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
 table = dynamodb.Table(DYNAMODB_TABLE_NAME)
 
-# Save face info to DynamoDB
-def save_to_dynamo(face_id, image_name):
-    table.put_item(Item={'FaceId': face_id, 'ImageName': image_name})
+def save_to_dynamo(face_id, filename):
+    """
+    Save Rekognition FaceId and filename to DynamoDB.
+    """
+    table.put_item(
+        Item={
+            'Rekognitionid': face_id,    # Primary key, case sensitive
+            'ImageFilename': filename
+        }
+    )
 
-# Get all stored face IDs from DynamoDB
 def get_all_faces():
+    """
+    Scan DynamoDB table and return list of Rekognition FaceIds.
+    """
     response = table.scan()
-    return [item['FaceId'] for item in response.get('Items', [])]
+    return [item['Rekognitionid'] for item in response.get('Items', [])]
 
 @app.route('/')
 def index():
@@ -36,25 +41,58 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'image' not in request.files:
-        return 'No file part', 400
-
+        return 'No file part in the request', 400
+    
     file = request.files['image']
     if file.filename == '':
         return 'No selected file', 400
+    
+    if file:
+        # Save file locally
+        filename = str(uuid.uuid4()) + "_" + file.filename
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
 
-    # Save file locally
-    filename = str(uuid.uuid4()) + "_" + file.filename
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
+        # Read image bytes for Rekognition
+        with open(filepath, 'rb') as image_file:
+            image_bytes = image_file.read()
 
-    # Index the face using Rekognition
-    with open(filepath, 'rb') as image:
+        # Index face into Rekognition collection
         response = rekognition.index_faces(
-            CollectionId=COLLECTION_ID,
-            Image={'Bytes': image.read()},
+            CollectionId=REKOGNITION_COLLECTION,
+            Image={'Bytes': image_bytes},
             ExternalImageId=filename,
             DetectionAttributes=['DEFAULT']
         )
 
-    if not response['FaceRecords']:
-        return 'No
+        if not response['FaceRecords']:
+            return 'No face detected in the image.', 400
+
+        face_id = response['FaceRecords'][0]['Face']['FaceId']
+
+        # Save to DynamoDB
+        save_to_dynamo(face_id, filename)
+
+        # Search for face matches excluding the face just indexed
+        matches = []
+        all_face_ids = get_all_faces()
+        for other_face_id in all_face_ids:
+            if other_face_id == face_id:
+                continue  # skip comparing to itself
+            
+            search_response = rekognition.search_faces(
+                CollectionId=REKOGNITION_COLLECTION,
+                FaceId=face_id,
+                FaceMatchThreshold=90,
+                MaxFaces=1
+            )
+            if search_response['FaceMatches']:
+                matched_face_id = search_response['FaceMatches'][0]['Face']['FaceId']
+                matches.append(matched_face_id)
+
+        return render_template('result.html', face_id=face_id, matches=matches)
+
+if __name__ == '__main__':
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    app.run(host='0.0.0.0', port=81, debug=True)
